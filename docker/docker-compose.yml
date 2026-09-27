@@ -1,0 +1,39 @@
+name: veterinaria
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: veterinaria_postgres
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: VeterinariaDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Veterinaria2026*
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../database:/docker-entrypoint-initdb.d
+    networks:
+      - veterinaria_network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: veterinaria_pgadmin
+    restart: unless-stopped
+    ports:
+      - "5051:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@veterinaria.com
+      PGADMIN_DEFAULT_PASSWORD: Veterinaria2026*
+    depends_on:
+      - postgres
+    networks:
+      - veterinaria_network
+
+volumes:
+  postgres_data:
+
+networks:
+  veterinaria_network:
+    driver: bridge

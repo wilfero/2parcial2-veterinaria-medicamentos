@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía Examen Medicamentos</title>
+<style>
+  :root {
+    --bg: #f5f8fb; --card: #ffffff; --text: #1d2b3f; --muted: #5f7189;
+    --border: #dbe4ee; --accent: #0a8fa8; --accent-soft: #e6f6f9;
+    --code-bg: #0f1a2a; --code-text: #d9e6f5;
+    --get: #0b8a52; --post: #b86e00; --put: #1f5fbf; --del: #c0392b;
+    --ok-bg: #e7f7ee; --err-bg: #fdecec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1520; --card: #162131; --text: #e3ebf5; --muted: #95a6bd;
+      --border: #26364b; --accent: #3cc3dc; --accent-soft: #15303a;
+      --code-bg: #0a111b; --code-text: #d9e6f5;
+      --get: #3ecf8e; --post: #f2a93b; --put: #6ea2ff; --del: #ff7a6b;
+      --ok-bg: #173327; --err-bg: #3a1c1c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1520; --card: #162131; --text: #e3ebf5; --muted: #95a6bd;
+    --border: #26364b; --accent: #3cc3dc; --accent-soft: #15303a;
+    --code-bg: #0a111b; --code-text: #d9e6f5;
+    --get: #3ecf8e; --post: #f2a93b; --put: #6ea2ff; --del: #ff7a6b;
+    --ok-bg: #173327; --err-bg: #3a1c1c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.6 "Segoe UI", system-ui, Arial, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 28px 16px 60px; }
+  header h1 { margin: 0 0 4px; font-size: 28px; }
+  header p { margin: 0; color: var(--muted); }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+  nav.toc a { padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px;
+              color: var(--text); text-decoration: none; background: var(--card); font-size: 14px; }
+  nav.toc a:hover { border-color: var(--accent); color: var(--accent); }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+            padding: 20px 22px; margin-top: 18px; }
+  h2 { margin: 0 0 12px; font-size: 21px; display: flex; align-items: center; gap: 10px; }
+  h2 .tag { font-size: 12px; background: var(--accent-soft); color: var(--accent);
+            padding: 3px 9px; border-radius: 999px; font-weight: 600; }
+  h3 { font-size: 16px; margin: 20px 0 8px; }
+  ul.check { list-style: none; padding: 0; margin: 0; }
+  ul.check li { padding: 7px 0 7px 28px; position: relative; border-bottom: 1px dashed var(--border); }
+  ul.check li:last-child { border-bottom: none; }
+  ul.check li::before { content: "✓"; position: absolute; left: 4px; color: var(--get); font-weight: 700; }
+  ul.check li small { display: block; color: var(--muted); }
+  code { font-family: Consolas, "Cascadia Code", monospace; font-size: 13.5px;
+         background: var(--accent-soft); padding: 1px 6px; border-radius: 5px; }
+  .code { position: relative; margin: 8px 0 12px; }
+  .code pre { margin: 0; background: var(--code-bg); color: var(--code-text); padding: 14px 16px;
+              border-radius: 10px; overflow-x: auto; font: 13px/1.55 Consolas, "Cascadia Code", monospace; }
+  .code button { position: absolute; top: 8px; right: 8px; border: 1px solid #3a4b63; background: #1b2940;
+                 color: #cfe0f5; border-radius: 6px; padding: 3px 10px; font-size: 12px; cursor: pointer; }
+  .code button:hover { background: #26395a; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; }
+  .tbl-wrap { overflow-x: auto; }
+  .req { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin: 14px 0; }
+  .req-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .req-head strong { font-size: 15.5px; }
+  .m { font: 700 12px Consolas, monospace; padding: 3px 9px; border-radius: 6px; color: #fff; }
+  .m.get { background: var(--get); } .m.post { background: var(--post); }
+  .m.put { background: var(--put); } .m.del { background: var(--del); }
+  .url { font-family: Consolas, monospace; font-size: 13.5px; word-break: break-all; }
+  .resp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .resp > div { border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+  .resp .ok { background: var(--ok-bg); } .resp .err { background: var(--err-bg); }
+  .resp b { display: block; margin-bottom: 2px; }
+  .note { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 10px 14px;
+          border-radius: 0 8px 8px 0; margin: 12px 0; }
+  ol li { margin: 4px 0; }
+  @media (max-width: 640px) { .resp { grid-template-columns: 1fr; } section { padding: 16px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Guía del examen: Tbl_Medicamentos</h1>
+    <p>Segundo parcial de Desarrollo Web. Stack: Node.js, NestJS, PostgreSQL (Docker Desktop), pgAdmin 4, VS Code, Postman y Next.js.</p>
+  </header>
+
+  <nav class="toc">
+    <a href="#arranque">0. Arranque</a>
+    <a href="#serie1">Serie 1: Consultar</a>
+    <a href="#nomenclatura">Nomenclatura</a>
+    <a href="#serie2">Serie 2: POST / PUT</a>
+    <a href="#serie3">Serie 3: GET / DELETE / Git</a>
+    <a href="#postman">Postman paso a paso</a>
+    <a href="#pgadmin">Verificar en pgAdmin</a>
+    <a href="#frontend">Frontend</a>
+  </nav>
+
+  <!-- ========================================================== -->
+  <section id="arranque">
+    <h2>0. Estructura y arranque <span class="tag">antes de todo</span></h2>
+    <div class="tbl-wrap"><table>
+      <tr><th>Carpeta / archivo</th><th>Contenido</th></tr>
+      <tr><td><code>docker/docker-compose.yml</code></td><td>Contenedores PostgreSQL 16 y pgAdmin 4</td></tr>
+      <tr><td><code>database/01_BaseDatos_Tablas.sql</code></td><td>Tabla <code>Tbl_Medicamentos</code></td></tr>
+      <tr><td><code>database/02_StoredProcedures.sql</code></td><td>Las 5 funciones almacenadas <code>Usp_Tbl_Medicamentos_*</code></td></tr>
+      <tr><td><code>database/03_DatosPrueba.sql</code></td><td>5 registros de prueba</td></tr>
+      <tr><td><code>backend/veterinaria-api</code></td><td>API REST NestJS (controlador, servicio, DTO)</td></tr>
+      <tr><td><code>backend/Veterinaria_Medicamentos.postman_collection.json</code></td><td>Colección lista para importar en Postman</td></tr>
+      <tr><td><code>frontend/veterinaria-web</code></td><td>Frontend Next.js (puerto 3001)</td></tr>
+    </table></div>
+
+    <h3>1. Levantar PostgreSQL y pgAdmin (Docker Desktop abierto)</h3>
+    <div class="code"><pre>cd C:\DESARROLLO_WEB\2parcial2\docker
+docker compose up -d
+docker ps</pre></div>
+    <div class="note">La primera vez que se crea el volumen, Docker ejecuta automáticamente los 3 scripts de <code>database/</code>, en orden: tabla, funciones y datos de prueba.</div>
+
+    <h3>2. Levantar el backend (puerto 3000)</h3>
+    <div class="code"><pre>cd C:\DESARROLLO_WEB\2parcial2\backend\veterinaria-api
+npm install
+npm run start:dev</pre></div>
+    <p>Debe mostrar: <code>Servidor Veterinaria corriendo en http://localhost:3000/api</code></p>
+
+    <h3>3. Levantar el frontend (puerto 3001)</h3>
+    <div class="code"><pre>cd C:\DESARROLLO_WEB\2parcial2\frontend\veterinaria-web
+npm install
+npm run dev -- -p 3001</pre></div>
+
+    <h3>Datos de conexión</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th></th><th>Valor</th></tr>
+      <tr><td>PostgreSQL (desde Windows)</td><td>host <code>localhost</code>, puerto <code>5433</code>, BD <code>VeterinariaDB</code>, usuario <code>postgres</code>, clave <code>Veterinaria2026*</code></td></tr>
+      <tr><td>pgAdmin 4</td><td><code>http://localhost:5051</code> con usuario <code>admin@veterinaria.com</code> y clave <code>Veterinaria2026*</code></td></tr>
+      <tr><td>Servidor en pgAdmin</td><td>host <code>postgres</code>, puerto <code>5432</code> (red interna de Docker), usuario <code>postgres</code>, clave <code>Veterinaria2026*</code></td></tr>
+    </table></div>
+  </section>
+
+  <!-- ========================================================== -->
+  <section id="serie1">
+    <h2>Primera serie: Consultar <span class="tag">5 puntos</span></h2>
+    <ul class="check">
+      <li>Preparar el entorno: Node.js, NestJS, PostgreSQL, Docker Desktop, pgAdmin 4, VS Code y Postman
+        <small>Docker con <code>docker/docker-compose.yml</code>; backend en <code>backend/veterinaria-api</code></small></li>
+      <li>Crear la base de datos y la tabla asignada según el diagrama entidad-relación
+        <small><code>VeterinariaDB</code> y <code>Tbl_Medicamentos</code> (12 campos), en <code>database/01_BaseDatos_Tablas.sql</code></small></li>
+      <li>Registrar cinco datos de prueba
+        <small><code>database/03_DatosPrueba.sql</code>: Amoxicilina, Ivermectina, Meloxicam, Shampoo Antipulgas y Vitamina B12</small></li>
+      <li>Script de la función almacenada Consultar
+        <small><code>Usp_Tbl_Medicamentos_Consultar()</code> en <code>02_StoredProcedures.sql</code></small></li>
+      <li>API Consultar con el método GET, que consume la función almacenada
+        <small><code>GET /api/medicamentosConsultar</code> ejecuta <code>SELECT * FROM Usp_Tbl_Medicamentos_Consultar()</code></small></li>
+      <li>La respuesta incluye todos los registros de la tabla, en formato JSON
+        <small><code>{ "exito": 1, "mensaje": "...", "datos": [ ...todos los medicamentos... ] }</code></small></li>
+      <li>Estructura organizada en controlador, servicio y acceso a datos
+        <small><code>medicamentos.controller.ts</code>, <code>medicamentos.service.ts</code> y <code>common/database.config.ts</code></small></li>
+      <li>Verificar que lo que muestra Postman coincida con PostgreSQL
+        <small>Ver la sección <a href="#pgadmin">Verificar en pgAdmin</a></small></li>
+    </ul>
+  </section>
+
+  <!-- ========================================================== -->
+  <section id="nomenclatura">
+    <h2>Nomenclatura establecida <span class="tag">aplica a las series 1, 2 y 3</span></h2>
+    <div class="tbl-wrap"><table>
+      <tr><th>Elemento</th><th>Regla</th><th>Ejemplo en este proyecto</th></tr>
+      <tr><td>Tabla</td><td><code>Tbl_</code> + nombre en plural (PascalCase)</td><td><code>Tbl_Medicamentos</code></td></tr>
+      <tr><td>Llave primaria</td><td><code>Codigo</code> + entidad en singular</td><td><code>CodigoMedicamento</code> (SERIAL)</td></tr>
+      <tr><td>Función almacenada</td><td><code>Usp_</code> + tabla + <code>_</code> + operación</td><td><code>Usp_Tbl_Medicamentos_Consultar</code>, <code>_Agregar</code>, <code>_Editar</code>, <code>_Buscar</code>, <code>_Eliminar</code></td></tr>
+      <tr><td>Parámetros de la función</td><td><code>p_</code> + nombre del campo</td><td><code>p_CodigoMedicamento</code>, <code>p_NombreMedicamento</code>, ...</td></tr>
+      <tr><td>Variables internas</td><td><code>v_</code> + nombre</td><td><code>v_Codigo</code></td></tr>
+      <tr><td>Resultado de las funciones</td><td>Columnas <code>exito</code> y <code>mensaje</code></td><td><code>exito = 1</code> correcto, <code>0</code> registro inexistente, <code>-1</code> error capturado en <code>EXCEPTION</code></td></tr>
+      <tr><td>Ruta de la API</td><td>entidad en plural (camelCase) + operación</td><td><code>/api/medicamentosAgregar</code>, <code>/api/medicamentosEditar/:codigo</code></td></tr>
+      <tr><td>Respuesta JSON</td><td>Siempre <code>exito</code>, <code>mensaje</code> y <code>datos</code></td><td><code>{"exito":1,"mensaje":"...","datos":{...}}</code></td></tr>
+    </table></div>
+  </section>
+
+  <!-- ========================================================== -->
+  <section id="serie2">
+    <h2>Segunda serie: Agregar (POST) y Editar (PUT) <span class="tag">5 puntos</span></h2>
+
+    <h3>Checklist de requisitos</h3>
+    <ul class="check">
+      <li>La función almacenada <b>Agregar</b> sigue la nomenclatura establecida: <code>Usp_Tbl_Medicamentos_Agregar</code></li>
+      <li>Recibe como parámetros los atributos de la tabla (11 parámetros <code>p_*</code>, sin la PK porque es SERIAL)</li>
+      <li>Maneja los errores con un bloque de excepción de PostgreSQL: <code>EXCEPTION WHEN OTHERS THEN ... SQLERRM</code></li>
+      <li>Devuelve mensajes para operaciones exitosas (<code>exito 1</code>) y para errores (<code>exito -1</code>)</li>
+      <li>La función almacenada <b>Editar</b> sigue la nomenclatura: <code>Usp_Tbl_Medicamentos_Editar</code></li>
+      <li>Recibe la llave primaria (<code>p_CodigoMedicamento</code>) y los datos que se actualizan</li>
+      <li>Maneja errores con <code>EXCEPTION</code> y devuelve mensajes de éxito, de registro inexistente (<code>exito 0</code>) y de error</li>
+      <li><b>API Agregar con método POST</b>: consume la función Agregar, recibe un objeto JSON y responde en JSON</li>
+      <li><b>API Editar con método PUT</b>: consume la función Editar; la PK va en la URL y los datos en el body; responde en JSON</li>
+      <li>Valida los datos obligatorios recibidos por las API (DTO con <code>class-validator</code> + <code>ValidationPipe</code>)</li>
+      <li>Se implementaron y probaron ambas en Postman, y se verificó en PostgreSQL</li>
+    </ul>
+
+    <h3>1. Función almacenada Agregar (<code>database/02_StoredProcedures.sql</code>)</h3>
+    <div class="code"><pre>CREATE OR REPLACE FUNCTION Usp_Tbl_Medicamentos_Agregar(
+    p_NombreMedicamento VARCHAR(150), p_Laboratorio VARCHAR(100), p_Presentacion VARCHAR(100),
+    p_Concentracion VARCHAR(50), p_ViaAdministracion VARCHAR(50), p_Existencia INT,
+    p_PrecioCompra DECIMAL(12,2), p_PrecioVenta DECIMAL(12,2), p_FechaVencimiento DATE,
+    p_RequiereReceta SMALLINT, p_Estado SMALLINT
+)
+RETURNS TABLE ("exito" INT, "mensaje" VARCHAR(250), "codigoMedicamento" INT) AS $$
+DECLARE
+    v_Codigo INT;
+BEGIN
+    INSERT INTO Tbl_Medicamentos (...) VALUES (...)
+    RETURNING CodigoMedicamento INTO v_Codigo;
+
+    RETURN QUERY SELECT 1, 'Medicamento agregado correctamente.'::VARCHAR(250), v_Codigo;
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN QUERY SELECT -1, ('Error al agregar el medicamento: ' || SQLERRM)::VARCHAR(250), NULL::INT;
+END;
+$$ LANGUAGE plpgsql;</pre></div>
+
+    <h3>2. Función almacenada Editar</h3>
+    <div class="code"><pre>CREATE OR REPLACE FUNCTION Usp_Tbl_Medicamentos_Editar(
+    p_CodigoMedicamento INT,  -- llave primaria
+    p_NombreMedicamento VARCHAR(150), ... , p_Estado SMALLINT
+)
+RETURNS TABLE ("exito" INT, "mensaje" VARCHAR(250)) AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Tbl_Medicamentos WHERE CodigoMedicamento = p_CodigoMedicamento) THEN
+        RETURN QUERY SELECT 0, ('No existe el medicamento con codigo ' || p_CodigoMedicamento || '.')::VARCHAR(250);
+        RETURN;
+    END IF;
+
+    UPDATE Tbl_Medicamentos SET NombreMedicamento = p_NombreMedicamento, ...
+    WHERE CodigoMedicamento = p_CodigoMedicamento;
+
+    RETURN QUERY SELECT 1, 'Medicamento editado correctamente.'::VARCHAR(250);
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN QUERY SELECT -1, ('Error al editar el medicamento: ' || SQLERRM)::VARCHAR(250);
+END;
+$$ LANGUAGE plpgsql;</pre></div>
+
+    <h3>3. Probar las funciones directamente en pgAdmin (Query Tool)</h3>
+    <div class="code"><pre>-- Agregar: devuelve exito 1 y el codigo generado
+SELECT * FROM Usp_Tbl_Medicamentos_Agregar('Prueba SQL','Lab','Tabletas','5 mg','Oral',10,5.00,9.00,'2027-01-01',0::smallint,1::smallint);
+
+-- Editar: exito 1 si existe, exito 0 si no existe
+SELECT * FROM Usp_Tbl_Medicamentos_Editar(1,'Amoxicilina Veterinaria','Holland Animal Health','Suspension oral 60 ml','250 mg/5 ml','Oral',40,45.00,75.00,'2027-08-15',1::smallint,1::smallint);
+SELECT * FROM Usp_Tbl_Medicamentos_Editar(999,'X','X','X',NULL,NULL,1,1,1,'2027-01-01',0::smallint,1::smallint);</pre></div>
+
+    <h3>4. Validación de datos obligatorios (<code>src/medicamentos/dto/medicamento.dto.ts</code>)</h3>
+    <div class="code"><pre>@IsString() @IsNotEmpty({ message: 'nombreMedicamento es obligatorio' }) @MaxLength(150)
+nombreMedicamento: string;
+
+@IsInt({ message: 'existencia debe ser un numero entero' }) @Min(0)
+existencia: number;
+
+@IsDateString({}, { message: 'fechaVencimiento debe tener formato YYYY-MM-DD' })
+fechaVencimiento: string;
+// ... y lo mismo para los demás campos</pre></div>
+    <p>En <code>main.ts</code>, <code>app.useGlobalPipes(new ValidationPipe({ whitelist: true, stopAtFirstError: true, ... }))</code> aplica estas reglas a todas las API. Si algo falla, responde <b>400</b> con <code>exito: 0</code>.</p>
+
+    <h3>5. Controlador: API POST y API PUT (<code>src/medicamentos/medicamentos.controller.ts</code>)</h3>
+    <div class="code"><pre>// POST /api/medicamentosAgregar  -> recibe un objeto JSON en el body
+@Post('medicamentosAgregar')
+async agregar(@Body() dto: MedicamentoDto) {
+  const resultado = await this.medicamentosService.agregar(dto);   // Usp_Tbl_Medicamentos_Agregar
+  return this.responder(resultado, { codigoMedicamento: resultado.codigoMedicamento });
+}
+
+// PUT /api/medicamentosEditar/:codigo  -> PK en la URL + datos en el body
+@Put('medicamentosEditar/:codigo')
+async editar(@Param('codigo', codigoPipe) codigo: number, @Body() dto: MedicamentoDto) {
+  const resultado = await this.medicamentosService.editar(codigo, dto); // Usp_Tbl_Medicamentos_Editar
+  return this.responder(resultado, { codigoMedicamento: codigo });
+}</pre></div>
+    <p>En el servicio: <code>pool.query('SELECT * FROM Usp_Tbl_Medicamentos_Agregar($1, ..., $11)', [...])</code>. Con <code>responder()</code>, un <code>exito 1</code> se devuelve como 200/201, un <code>0</code> como 404 y un <code>-1</code> como 400.</p>
+
+    <h3>6. Postman paso a paso: POST (Agregar)</h3>
+    <ol>
+      <li>Clic en <b>New</b> y luego <b>HTTP Request</b>. Selecciona el método <span class="m post">POST</span>.</li>
+      <li>URL: <code>http://localhost:3000/api/medicamentosAgregar</code></li>
+      <li>Pestaña <b>Body</b>, elige <b>raw</b> y en el desplegable de la derecha <b>JSON</b>. Pega:</li>
+    </ol>
+    <div class="code"><pre>{
+  "nombreMedicamento": "Doxiciclina",
+  "laboratorio": "Zoetis",
+  "presentacion": "Tabletas x 20",
+  "concentracion": "100 mg",
+  "viaAdministracion": "Oral",
+  "existencia": 30,
+  "precioCompra": 42.50,
+  "precioVenta": 70.00,
+  "fechaVencimiento": "2027-11-30",
+  "requiereReceta": 1,
+  "estado": 1
+}</pre></div>
+    <ol start="4">
+      <li><b>Send</b>. Debe responder <b>201 Created</b>: <code>{"exito":1,"mensaje":"Medicamento agregado correctamente.","datos":{"codigoMedicamento":6}}</code></li>
+      <li><b>Prueba de validación:</b> cambia el body a <code>{"laboratorio":"Zoetis","existencia":-5}</code> y envía. Debe responder <b>400</b>: <code>"Datos invalidos: nombreMedicamento es obligatorio; ..."</code></li>
+      <li><b>Verifica en pgAdmin:</b> <code>SELECT * FROM Tbl_Medicamentos WHERE CodigoMedicamento = 6;</code></li>
+    </ol>
+
+    <h3>7. Postman paso a paso: PUT (Editar)</h3>
+    <ol>
+      <li>Nueva petición con el método <span class="m put">PUT</span>.</li>
+      <li>URL con la llave primaria al final: <code>http://localhost:3000/api/medicamentosEditar/6</code></li>
+      <li>Body, luego raw y JSON. Envía <b>todos</b> los campos con los valores nuevos:</li>
+    </ol>
+    <div class="code"><pre>{
+  "nombreMedicamento": "Doxiciclina Plus",
+  "laboratorio": "Zoetis",
+  "presentacion": "Tabletas x 30",
+  "concentracion": "200 mg",
+  "viaAdministracion": "Oral",
+  "existencia": 45,
+  "precioCompra": 50.00,
+  "precioVenta": 85.00,
+  "fechaVencimiento": "2028-02-28",
+  "requiereReceta": 1,
+  "estado": 1
+}</pre></div>
+    <ol start="4">
+      <li><b>Send</b>. Debe responder <b>200 OK</b>: <code>{"exito":1,"mensaje":"Medicamento editado correctamente.","datos":{"codigoMedicamento":6}}</code></li>
+      <li><b>Registro inexistente:</b> cambia la URL a <code>/medicamentosEditar/999</code>. Debe responder <b>404</b>: <code>"No existe el medicamento con codigo 999."</code></li>
+      <li><b>Verifica en pgAdmin</b> que cambió: <code>SELECT NombreMedicamento, Existencia, PrecioVenta FROM Tbl_Medicamentos WHERE CodigoMedicamento = 6;</code></li>
+    </ol>
+  </section>
+
+  <!-- ========================================================== -->
+  <section id="serie3">
+    <h2>Tercera serie: Buscar (GET), Eliminar (DELETE) y Git/GitHub <span class="tag">5 puntos</span></h2>
+
+    <h3>Checklist de requisitos</h3>
+    <ul class="check">
+      <li>La función almacenada <b>Buscar</b> sigue la nomenclatura: <code>Usp_Tbl_Medicamentos_Buscar(p_CodigoMedicamento)</code></li>
+      <li>Busca por llave primaria y devuelve el registro, o 0 filas cuando el código no existe (la API responde 404 con un mensaje)</li>
+      <li>Maneja errores con <code>EXCEPTION WHEN OTHERS THEN RAISE EXCEPTION ...</code></li>
+      <li>La función almacenada <b>Eliminar</b> sigue la nomenclatura: <code>Usp_Tbl_Medicamentos_Eliminar(p_CodigoMedicamento)</code></li>
+      <li>Recibe la PK, maneja excepciones y devuelve mensajes de éxito (1), registro inexistente (0) y error (-1)</li>
+      <li><b>API Buscar con método GET</b>: la PK va en la solicitud (<code>/medicamentosBuscar/:codigo</code>) y responde en JSON</li>
+      <li><b>API Eliminar con método DELETE</b>: el registro se identifica con la PK (<code>/medicamentosEliminar/:codigo</code>) y responde en JSON</li>
+      <li>Se probaron ambas en Postman</li>
+      <li>Los cambios se registraron con <b>Git</b> y el proyecto se publicó en <b>GitHub</b> (usuario <code>wilfero</code>)</li>
+    </ul>
+
+    <h3>1. Función almacenada Buscar</h3>
+    <div class="code"><pre>CREATE OR REPLACE FUNCTION Usp_Tbl_Medicamentos_Buscar(p_CodigoMedicamento INT)
+RETURNS TABLE ("codigoMedicamento" INT, "nombreMedicamento" VARCHAR(150), ... , "estado" SMALLINT) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT m.CodigoMedicamento, m.NombreMedicamento, ... , m.Estado
+    FROM Tbl_Medicamentos m
+    WHERE m.CodigoMedicamento = p_CodigoMedicamento;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Error al buscar el medicamento: %', SQLERRM;
+END;
+$$ LANGUAGE plpgsql;</pre></div>
+
+    <h3>2. Función almacenada Eliminar</h3>
+    <div class="code"><pre>CREATE OR REPLACE FUNCTION Usp_Tbl_Medicamentos_Eliminar(p_CodigoMedicamento INT)
+RETURNS TABLE ("exito" INT, "mensaje" VARCHAR(250)) AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Tbl_Medicamentos WHERE CodigoMedicamento = p_CodigoMedicamento) THEN
+        RETURN QUERY SELECT 0, ('No existe el medicamento con codigo ' || p_CodigoMedicamento || '.')::VARCHAR(250);
+        RETURN;
+    END IF;
+
+    DELETE FROM Tbl_Medicamentos WHERE CodigoMedicamento = p_CodigoMedicamento;
+
+    RETURN QUERY SELECT 1, 'Medicamento eliminado correctamente.'::VARCHAR(250);
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN QUERY SELECT -1, ('Error al eliminar el medicamento: ' || SQLERRM)::VARCHAR(250);
+END;
+$$ LANGUAGE plpgsql;</pre></div>
+
+    <h3>3. Probar las funciones en pgAdmin</h3>
+    <div class="code"><pre>SELECT * FROM Usp_Tbl_Medicamentos_Buscar(1);     -- devuelve el registro 1
+SELECT * FROM Usp_Tbl_Medicamentos_Buscar(999);   -- 0 filas
+SELECT * FROM Usp_Tbl_Medicamentos_Eliminar(999); -- exito 0, no existe</pre></div>
+
+    <h3>4. Controlador: API GET y API DELETE</h3>
+    <div class="code"><pre>// GET /api/medicamentosBuscar/:codigo
+@Get('medicamentosBuscar/:codigo')
+async buscar(@Param('codigo', codigoPipe) codigo: number) {
+  const datos = await this.medicamentosService.buscar(codigo);   // Usp_Tbl_Medicamentos_Buscar
+  if (!datos) throw new HttpException({ exito: 0, mensaje: `No existe el medicamento con codigo ${codigo}.`, datos: null }, 404);
+  return { exito: 1, mensaje: 'Medicamento encontrado.', datos };
+}
+
+// DELETE /api/medicamentosEliminar/:codigo
+@Delete('medicamentosEliminar/:codigo')
+async eliminar(@Param('codigo', codigoPipe) codigo: number) {
+  const resultado = await this.medicamentosService.eliminar(codigo); // Usp_Tbl_Medicamentos_Eliminar
+  return this.responder(resultado, { codigoMedicamento: codigo });
+}</pre></div>
+    <p><code>codigoPipe</code> (un <code>ParseIntPipe</code>) valida que la PK sea un número entero. Si no lo es, responde <b>400</b>.</p>
+
+    <h3>5. Postman paso a paso: GET (Buscar)</h3>
+    <ol>
+      <li>Nueva petición con el método <span class="m get">GET</span>. <b>Sin body.</b></li>
+      <li>URL: <code>http://localhost:3000/api/medicamentosBuscar/1</code> y luego <b>Send</b>. Debe responder <b>200</b>: <code>{"exito":1,"mensaje":"Medicamento encontrado.","datos":{"codigoMedicamento":1,...}}</code></li>
+      <li>Código inexistente: <code>/medicamentosBuscar/999</code> responde <b>404</b>: <code>"No existe el medicamento con codigo 999."</code></li>
+      <li>Código inválido: <code>/medicamentosBuscar/abc</code> responde <b>400</b>: <code>"El codigo del medicamento debe ser un numero entero."</code></li>
+    </ol>
+
+    <h3>6. Postman paso a paso: DELETE (Eliminar)</h3>
+    <ol>
+      <li>Nueva petición con el método <span class="m del">DELETE</span>. <b>Sin body.</b></li>
+      <li>URL: <code>http://localhost:3000/api/medicamentosEliminar/6</code> y luego <b>Send</b>. Debe responder <b>200</b>: <code>{"exito":1,"mensaje":"Medicamento eliminado correctamente.","datos":{"codigoMedicamento":6}}</code></li>
+      <li>Envíalo otra vez: responde <b>404</b>, <code>"No existe el medicamento con codigo 6."</code></li>
+      <li>Confirma con <span class="m get">GET</span> <code>/medicamentosBuscar/6</code>, que responde 404. En pgAdmin: <code>SELECT * FROM Tbl_Medicamentos WHERE CodigoMedicamento = 6;</code> devuelve 0 filas.</li>
+    </ol>
+
+    <h3>7. Git y GitHub (usuario <code>wilfero</code>)</h3>
+    <p>Repositorio: <a href="https://github.com/wilfero/2parcial2-veterinaria-medicamentos">github.com/wilfero/2parcial2-veterinaria-medicamentos</a></p>
+    <div class="code"><pre>cd C:\DESARROLLO_WEB\2parcial2
+
+# Solo la primera vez
+git init
+git branch -M main
+git remote add origin https://github.com/wilfero/2parcial2-veterinaria-medicamentos.git
+
+# Cada vez que haya cambios
+git status
+git add .
+git commit -m "Serie 3: Buscar y Eliminar Tbl_Medicamentos"
+git push -u origin main
+
+# Ver el historial de commits
+git log --oneline</pre></div>
+    <div class="note">Si <code>git push</code> pide autenticación, ejecuta <code>gh auth login</code> y elige GitHub.com, luego HTTPS y luego Login with a web browser. El <code>.gitignore</code> excluye <code>node_modules</code>, <code>dist</code> y <code>.next</code>.</div>
+  </section>
+
+  <!-- ========================================================== -->
+  <section id="postman">
+    <h2>Resumen: qué ingresar en Postman</h2>
+    <ol>
+      <li><b>Opción rápida:</b> en Postman, <b>Import</b>, y elige <code>backend/Veterinaria_Medicamentos.postman_collection.json</code>. Ya trae todas las peticiones.</li>
+      <li><b>Opción manual:</b> <b>New → HTTP Request</b>, elige el método y pega la URL. Para POST y PUT: pestaña <b>Body → raw → JSON</b>, pega el JSON y presiona <b>Send</b>.</li>
+    </ol>
+    <div class="note">El backend tiene que estar corriendo (<code>npm run start:dev</code>). Los códigos 1 a 5 son los datos de prueba. Al agregar uno nuevo se crea el código 6.</div>
+
+    <!-- CONSULTAR -->
+    <div class="req">
+      <div class="req-head"><span class="m get">GET</span><strong>Serie 1: Consultar</strong></div>
+      <p class="url">http://localhost:3000/api/medicamentosConsultar</p>
+      <p>Sin body. Devuelve los 5 registros.</p>
+      <div class="resp">
+        <div class="ok"><b>200 OK</b><code>{"exito":1,"mensaje":"Medicamentos consultados correctamente.","datos":[...]}</code></div>
+      </div>
+    </div>
+
+    <!-- AGREGAR -->
+    <div class="req">
+      <div class="req-head"><span class="m post">POST</span><strong>Serie 2: Agregar</strong></div>
+      <p class="url">http://localhost:3000/api/medicamentosAgregar</p>
+      <p>Body → raw → JSON:</p>
+      <div class="code"><pre>{
+  "nombreMedicamento": "Doxiciclina",
+  "laboratorio": "Zoetis",
+  "presentacion": "Tabletas x 20",
+  "concentracion": "100 mg",
+  "viaAdministracion": "Oral",
+  "existencia": 30,
+  "precioCompra": 42.50,
+  "precioVenta": 70.00,
+  "fechaVencimiento": "2027-11-30",
+  "requiereReceta": 1,
+  "estado": 1
+}</pre></div>
+      <div class="resp">
+        <div class="ok"><b>201 Created</b><code>{"exito":1,"mensaje":"Medicamento agregado correctamente.","datos":{"codigoMedicamento":6}}</code></div>
+        <div class="err"><b>400 si faltan datos</b>Envía por ejemplo <code>{"laboratorio":"Zoetis","existencia":-5}</code> y responde <code>"Datos invalidos: nombreMedicamento es obligatorio; ..."</code></div>
+      </div>
+      <p><small>Obligatorios: nombreMedicamento, laboratorio, presentacion, existencia, precioCompra, precioVenta y fechaVencimiento. Opcionales: concentracion, viaAdministracion, requiereReceta (0/1, por defecto 0) y estado (0/1, por defecto 1).</small></p>
+    </div>
+
+    <!-- EDITAR -->
+    <div class="req">
+      <div class="req-head"><span class="m put">PUT</span><strong>Serie 2: Editar</strong></div>
+      <p class="url">http://localhost:3000/api/medicamentosEditar/6</p>
+      <p>El <b>6</b> de la URL es la llave primaria. Body → raw → JSON:</p>
+      <div class="code"><pre>{
+  "nombreMedicamento": "Doxiciclina Plus",
+  "laboratorio": "Zoetis",
+  "presentacion": "Tabletas x 30",
+  "concentracion": "200 mg",
+  "viaAdministracion": "Oral",
+  "existencia": 45,
+  "precioCompra": 50.00,
+  "precioVenta": 85.00,
+  "fechaVencimiento": "2028-02-28",
+  "requiereReceta": 1,
+  "estado": 1
+}</pre></div>
+      <div class="resp">
+        <div class="ok"><b>200 OK</b><code>{"exito":1,"mensaje":"Medicamento editado correctamente.","datos":{"codigoMedicamento":6}}</code></div>
+        <div class="err"><b>404 si no existe</b>Con la URL <code>/medicamentosEditar/999</code> responde <code>"No existe el medicamento con codigo 999."</code></div>
+      </div>
+    </div>
+
+    <!-- BUSCAR -->
+    <div class="req">
+      <div class="req-head"><span class="m get">GET</span><strong>Serie 3: Buscar</strong></div>
+      <p class="url">http://localhost:3000/api/medicamentosBuscar/1</p>
+      <p>Sin body. La llave primaria va en la URL.</p>
+      <div class="resp">
+        <div class="ok"><b>200 OK</b><code>{"exito":1,"mensaje":"Medicamento encontrado.","datos":{"codigoMedicamento":1,...}}</code></div>
+        <div class="err"><b>404 / 400</b><code>/medicamentosBuscar/999</code> responde que no existe. <code>/medicamentosBuscar/abc</code> responde que el código debe ser un número entero.</div>
+      </div>
+    </div>
+
+    <!-- ELIMINAR -->
+    <div class="req">
+      <div class="req-head"><span class="m del">DELETE</span><strong>Serie 3: Eliminar</strong></div>
+      <p class="url">http://localhost:3000/api/medicamentosEliminar/6</p>
+      <p>Sin body. Elimina el registro con esa llave primaria.</p>
+      <div class="resp">
+        <div class="ok"><b>200 OK</b><code>{"exito":1,"mensaje":"Medicamento eliminado correctamente.","datos":{"codigoMedicamento":6}}</code></div>
+        <div class="err"><b>404 si no existe</b>Si lo envías de nuevo responde <code>"No existe el medicamento con codigo 6."</code></div>
+      </div>
+    </div>
+
+    <h3>Orden recomendado para la demostración</h3>
+    <ol>
+      <li>Consultar: muestra 5 registros</li>
+      <li>Agregar: se crea el código 6. Luego Consultar muestra 6 registros</li>
+      <li>Agregar con datos inválidos: responde 400 (validación)</li>
+      <li>Editar 6, y luego Buscar 6 para ver los datos cambiados</li>
+      <li>Editar 999: responde 404</li>
+      <li>Eliminar 6, luego Buscar 6: responde 404</li>
+    </ol>
+  </section>
+
+  <!-- ========================================================== -->
+  <section id="pgadmin">
+    <h2>Verificar en pgAdmin 4 / PostgreSQL</h2>
+    <ol>
+      <li>Abre <code>http://localhost:5051</code> e inicia sesión con <code>admin@veterinaria.com</code> y <code>Veterinaria2026*</code>.</li>
+      <li>Clic derecho en <b>Servers → Register → Server</b>. En General, Name: <code>Veterinaria</code>.</li>
+      <li>En la pestaña Connection: Host <code>postgres</code>, Port <code>5432</code>, Username <code>postgres</code>, Password <code>Veterinaria2026*</code>, y guarda.</li>
+      <li>Ve a <b>VeterinariaDB → Query Tool</b> y ejecuta:</li>
+    </ol>
+    <div class="code"><pre>-- Ver la tabla directamente
+SELECT * FROM Tbl_Medicamentos ORDER BY CodigoMedicamento;
+
+-- Probar las funciones almacenadas
+SELECT * FROM Usp_Tbl_Medicamentos_Consultar();
+SELECT * FROM Usp_Tbl_Medicamentos_Buscar(1);
+SELECT * FROM Usp_Tbl_Medicamentos_Agregar('Prueba SQL','Lab','Tabletas','5 mg','Oral',10,5.00,9.00,'2027-01-01',0::smallint,1::smallint);
+SELECT * FROM Usp_Tbl_Medicamentos_Editar(1,'Amoxicilina Veterinaria','Holland Animal Health','Suspension oral 60 ml','250 mg/5 ml','Oral',40,45.00,75.00,'2027-08-15',1::smallint,1::smallint);
+SELECT * FROM Usp_Tbl_Medicamentos_Eliminar(999);  -- devuelve exito 0 (no existe)</pre></div>
+    <div class="note">Si prefieres la terminal:<br><code>docker exec -it veterinaria_postgres psql -U postgres -d VeterinariaDB -c "SELECT * FROM Tbl_Medicamentos"</code></div>
+  </section>
+
+  <!-- ========================================================== -->
+  <section id="frontend">
+    <h2>Frontend Next.js</h2>
+    <p>Abre <code>http://localhost:3001</code> con el backend encendido.</p>
+    <ul class="check">
+      <li>Dashboard con el menú lateral (Sidebar), la barra superior (Header) y el MainLayout, como en la guía</li>
+      <li><b>Medicamentos → Consultar</b>: tarjetas de resumen, tabla con los datos reales de la API, buscador, y botones para editar y eliminar</li>
+      <li><b>Medicamentos → Agregar</b>: formulario que consume <code>POST /medicamentosAgregar</code></li>
+      <li>El botón editar abre el formulario con los datos cargados por <code>medicamentosBuscar</code> y guarda con <code>PUT</code></li>
+      <li>El botón eliminar pide confirmación y consume <code>DELETE</code></li>
+    </ul>
+  </section>
+</div>
+
+<script>
+  // Agrega un botón "Copiar" a cada bloque de código
+  document.querySelectorAll('.code').forEach(function (bloque) {
+    var boton = document.createElement('button');
+    boton.type = 'button';
+    boton.textContent = 'Copiar';
+    boton.addEventListener('click', function () {
+      var texto = bloque.querySelector('pre').innerText;
+      navigator.clipboard.writeText(texto).then(function () {
+        boton.textContent = 'Copiado';
+        setTimeout(function () { boton.textContent = 'Copiar'; }, 1500);
+      });
+    });
+    bloque.appendChild(boton);
+  });
+</script>
+</body>
+</html>

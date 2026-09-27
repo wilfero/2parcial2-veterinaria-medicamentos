@@ -1,0 +1,95 @@
+{
+  "info": {
+    "name": "Veterinaria - Tbl_Medicamentos",
+    "description": "CRUD de Tbl_Medicamentos (NestJS + PostgreSQL). Backend en http://localhost:3000/api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" }
+  ],
+  "item": [
+    {
+      "name": "Serie 1 - Consultar (GET)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/medicamentosConsultar"
+      }
+    },
+    {
+      "name": "Serie 2 - Agregar (POST)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/medicamentosAgregar",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombreMedicamento\": \"Doxiciclina\",\n  \"laboratorio\": \"Zoetis\",\n  \"presentacion\": \"Tabletas x 20\",\n  \"concentracion\": \"100 mg\",\n  \"viaAdministracion\": \"Oral\",\n  \"existencia\": 30,\n  \"precioCompra\": 42.50,\n  \"precioVenta\": 70.00,\n  \"fechaVencimiento\": \"2027-11-30\",\n  \"requiereReceta\": 1,\n  \"estado\": 1\n}"
+        }
+      }
+    },
+    {
+      "name": "Serie 2 - Agregar datos invalidos (POST)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/medicamentosAgregar",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"laboratorio\": \"Zoetis\",\n  \"existencia\": -5\n}"
+        }
+      }
+    },
+    {
+      "name": "Serie 2 - Editar (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/medicamentosEditar/6",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombreMedicamento\": \"Doxiciclina Plus\",\n  \"laboratorio\": \"Zoetis\",\n  \"presentacion\": \"Tabletas x 30\",\n  \"concentracion\": \"200 mg\",\n  \"viaAdministracion\": \"Oral\",\n  \"existencia\": 45,\n  \"precioCompra\": 50.00,\n  \"precioVenta\": 85.00,\n  \"fechaVencimiento\": \"2028-02-28\",\n  \"requiereReceta\": 1,\n  \"estado\": 1\n}"
+        }
+      }
+    },
+    {
+      "name": "Serie 2 - Editar inexistente (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/medicamentosEditar/999",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombreMedicamento\": \"No existe\",\n  \"laboratorio\": \"X\",\n  \"presentacion\": \"X\",\n  \"existencia\": 1,\n  \"precioCompra\": 1,\n  \"precioVenta\": 2,\n  \"fechaVencimiento\": \"2027-01-01\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Serie 3 - Buscar (GET)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/medicamentosBuscar/1"
+      }
+    },
+    {
+      "name": "Serie 3 - Buscar inexistente (GET)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/medicamentosBuscar/999"
+      }
+    },
+    {
+      "name": "Serie 3 - Eliminar (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/medicamentosEliminar/6"
+      }
+    },
+    {
+      "name": "Serie 3 - Eliminar inexistente (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/medicamentosEliminar/999"
+      }
+    }
+  ]
+}
