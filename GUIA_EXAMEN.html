@@ -93,7 +93,7 @@
     <a href="#serie3">Serie 3: GET / DELETE / Git</a>
     <a href="#postman">Postman paso a paso</a>
     <a href="#pgadmin">Verificar en pgAdmin</a>
-    <a href="#frontend">Frontend</a>
+    <a href="#frontend">Frontend (sin login)</a>
   </nav>
 
   <!-- ========================================================== -->
@@ -127,13 +127,17 @@ npm run start:dev</pre></div>
 npm install
 npm run dev -- -p 3001</pre></div>
 
-    <h3>Datos de conexión</h3>
+    <h3>Direcciones y credenciales</h3>
     <div class="tbl-wrap"><table>
       <tr><th></th><th>Valor</th></tr>
+      <tr><td>Frontend (página web)</td><td><code>http://localhost:3001</code>. <b>No pide usuario ni contraseña</b>: el examen no pide login. Los botones "Usuario" y "Salir" del encabezado solo son visuales, como en la guía Fase 4</td></tr>
+      <tr><td>Backend (API)</td><td><code>http://localhost:3000/api</code>, sin autenticación. Ejemplo: <code>http://localhost:3000/api/medicamentosConsultar</code></td></tr>
       <tr><td>PostgreSQL (desde Windows)</td><td>host <code>localhost</code>, puerto <code>5433</code>, BD <code>VeterinariaDB</code>, usuario <code>postgres</code>, clave <code>Veterinaria2026*</code></td></tr>
       <tr><td>pgAdmin 4</td><td><code>http://localhost:5051</code> con usuario <code>admin@veterinaria.com</code> y clave <code>Veterinaria2026*</code></td></tr>
       <tr><td>Servidor en pgAdmin</td><td>host <code>postgres</code>, puerto <code>5432</code> (red interna de Docker), usuario <code>postgres</code>, clave <code>Veterinaria2026*</code></td></tr>
+      <tr><td>GitHub</td><td>cuenta <code>wilfero</code>, repositorio <a href="https://github.com/wilfero/2parcial2-veterinaria-medicamentos">github.com/wilfero/2parcial2-veterinaria-medicamentos</a></td></tr>
     </table></div>
+    <div class="note">PostgreSQL usa el puerto <b>5433</b> y pgAdmin el <b>5051</b> (no 5432/5050), porque esos puertos ya los ocupa otro proyecto en esta computadora. Antes de abrir el frontend o Postman, el backend debe estar encendido (<code>npm run start:dev</code>).</div>
   </section>
 
   <!-- ========================================================== -->
@@ -413,21 +417,28 @@ async eliminar(@Param('codigo', codigoPipe) codigo: number) {
 
     <h3>7. Git y GitHub (usuario <code>wilfero</code>)</h3>
     <p>Repositorio: <a href="https://github.com/wilfero/2parcial2-veterinaria-medicamentos">github.com/wilfero/2parcial2-veterinaria-medicamentos</a></p>
+    <div class="note"><b>Estado actual:</b> el repositorio ya está creado y publicado en la rama <code>main</code>, con autor <code>wilfero</code>. Git en esta carpeta ya tiene configurados el remoto <code>origin</code> y el autor. No hace falta volver a hacer <code>git init</code>.</div>
     <div class="code"><pre>cd C:\DESARROLLO_WEB\2parcial2
-
-# Solo la primera vez
-git init
-git branch -M main
-git remote add origin https://github.com/wilfero/2parcial2-veterinaria-medicamentos.git
 
 # Cada vez que haya cambios
 git status
 git add .
-git commit -m "Serie 3: Buscar y Eliminar Tbl_Medicamentos"
-git push -u origin main
+git commit -m "Descripcion del cambio"
+git push
 
 # Ver el historial de commits
 git log --oneline</pre></div>
+    <p>Para descargarlo en otra computadora:</p>
+    <div class="code"><pre>git clone https://github.com/wilfero/2parcial2-veterinaria-medicamentos.git
+cd 2parcial2-veterinaria-medicamentos\docker
+docker compose up -d
+cd ..\backend\veterinaria-api
+npm install
+npm run start:dev
+# en otra terminal, desde la carpeta del repositorio
+cd frontend\veterinaria-web
+npm install
+npm run dev -- -p 3001</pre></div>
     <div class="note">Si <code>git push</code> pide autenticación, ejecuta <code>gh auth login</code> y elige GitHub.com, luego HTTPS y luego Login with a web browser. El <code>.gitignore</code> excluye <code>node_modules</code>, <code>dist</code> y <code>.next</code>.</div>
   </section>
 
@@ -556,10 +567,20 @@ SELECT * FROM Usp_Tbl_Medicamentos_Eliminar(999);  -- devuelve exito 0 (no exist
   <!-- ========================================================== -->
   <section id="frontend">
     <h2>Frontend Next.js</h2>
-    <p>Abre <code>http://localhost:3001</code> con el backend encendido.</p>
+    <p>Abre <code>http://localhost:3001</code> con el backend encendido. <b>Sin usuario ni contraseña</b>: entras directo al Dashboard.</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>Página</th><th>URL</th><th>API que usa</th></tr>
+      <tr><td>Dashboard</td><td><code>http://localhost:3001/</code></td><td>ninguna</td></tr>
+      <tr><td>Consultar</td><td><code>http://localhost:3001/medicamentos/consultar</code></td><td><span class="m get">GET</span> Consultar, <span class="m get">GET</span> Buscar, <span class="m del">DELETE</span> Eliminar</td></tr>
+      <tr><td>Agregar</td><td><code>http://localhost:3001/medicamentos/agregar</code></td><td><span class="m post">POST</span> Agregar</td></tr>
+      <tr><td>Editar</td><td><code>http://localhost:3001/medicamentos/editar/1</code></td><td><span class="m get">GET</span> Buscar, <span class="m put">PUT</span> Editar</td></tr>
+    </table></div>
+    <h3>Qué hace cada parte</h3>
     <ul class="check">
       <li>Dashboard con el menú lateral (Sidebar), la barra superior (Header) y el MainLayout, como en la guía</li>
-      <li><b>Medicamentos → Consultar</b>: tarjetas de resumen, tabla con los datos reales de la API, buscador, y botones para editar y eliminar</li>
+      <li><b>Medicamentos → Consultar</b>: tarjetas de resumen, tabla con los datos reales de la API y botones para editar y eliminar</li>
+      <li><b>Filtrar por nombre</b>: filtra la tabla al escribir, por nombre, laboratorio o presentación</li>
+      <li><b>Buscar por código</b>: escribe el código y presiona Enter o la lupa (usa la API Buscar). Si lo dejas vacío y buscas, vuelve a mostrar todos</li>
       <li><b>Medicamentos → Agregar</b>: formulario que consume <code>POST /medicamentosAgregar</code></li>
       <li>El botón editar abre el formulario con los datos cargados por <code>medicamentosBuscar</code> y guarda con <code>PUT</code></li>
       <li>El botón eliminar pide confirmación y consume <code>DELETE</code></li>
