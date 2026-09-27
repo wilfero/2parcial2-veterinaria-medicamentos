@@ -1,0 +1,162 @@
+==============================================================
+ ENDPOINTS POSTMAN - Tbl_Medicamentos (Clinica Veterinaria)
+ Backend NestJS: http://localhost:3000/api
+ Antes de probar: docker compose up -d  y  npm run start:dev
+ Para POST y PUT: Body > raw > JSON
+==============================================================
+
+
+--------------------------------------------------------------
+ SERIE 1 - CONSULTAR
+--------------------------------------------------------------
+
+1) Consultar todos los medicamentos
+   Metodo: GET
+   URL:    http://localhost:3000/api/medicamentosConsultar
+   Body:   (no lleva)
+   Respuesta 200:
+   {"exito":1,"mensaje":"Medicamentos consultados correctamente.","datos":[ ... ]}
+
+
+--------------------------------------------------------------
+ SERIE 2 - AGREGAR (POST) Y EDITAR (PUT)
+--------------------------------------------------------------
+
+2) Agregar medicamento
+   Metodo: POST
+   URL:    http://localhost:3000/api/medicamentosAgregar
+   Body (raw JSON):
+{
+  "nombreMedicamento": "Doxiciclina",
+  "laboratorio": "Zoetis",
+  "presentacion": "Tabletas x 20",
+  "concentracion": "100 mg",
+  "viaAdministracion": "Oral",
+  "existencia": 30,
+  "precioCompra": 42.50,
+  "precioVenta": 70.00,
+  "fechaVencimiento": "2027-11-30",
+  "requiereReceta": 1,
+  "estado": 1
+}
+   Respuesta 201:
+   {"exito":1,"mensaje":"Medicamento agregado correctamente.","datos":{"codigoMedicamento":6}}
+
+   Campos obligatorios: nombreMedicamento, laboratorio, presentacion,
+   existencia, precioCompra, precioVenta, fechaVencimiento (YYYY-MM-DD)
+   Opcionales: concentracion, viaAdministracion,
+   requiereReceta (0/1, por defecto 0), estado (0/1, por defecto 1)
+
+
+3) Agregar con datos invalidos (prueba de validacion)
+   Metodo: POST
+   URL:    http://localhost:3000/api/medicamentosAgregar
+   Body (raw JSON):
+{
+  "laboratorio": "Zoetis",
+  "existencia": -5
+}
+   Respuesta 400:
+   {"exito":0,"mensaje":"Datos invalidos: nombreMedicamento es obligatorio; ...","datos":null}
+
+
+4) Editar medicamento (la llave primaria va en la URL)
+   Metodo: PUT
+   URL:    http://localhost:3000/api/medicamentosEditar/6
+   Body (raw JSON):
+{
+  "nombreMedicamento": "Doxiciclina Plus",
+  "laboratorio": "Zoetis",
+  "presentacion": "Tabletas x 30",
+  "concentracion": "200 mg",
+  "viaAdministracion": "Oral",
+  "existencia": 45,
+  "precioCompra": 50.00,
+  "precioVenta": 85.00,
+  "fechaVencimiento": "2028-02-28",
+  "requiereReceta": 1,
+  "estado": 1
+}
+   Respuesta 200:
+   {"exito":1,"mensaje":"Medicamento editado correctamente.","datos":{"codigoMedicamento":6}}
+
+
+5) Editar medicamento inexistente
+   Metodo: PUT
+   URL:    http://localhost:3000/api/medicamentosEditar/999
+   Body (raw JSON):
+{
+  "nombreMedicamento": "No existe",
+  "laboratorio": "X",
+  "presentacion": "X",
+  "existencia": 1,
+  "precioCompra": 1,
+  "precioVenta": 2,
+  "fechaVencimiento": "2027-01-01"
+}
+   Respuesta 404:
+   {"exito":0,"mensaje":"No existe el medicamento con codigo 999.","datos":null}
+
+
+--------------------------------------------------------------
+ SERIE 3 - BUSCAR (GET) Y ELIMINAR (DELETE)
+--------------------------------------------------------------
+
+6) Buscar medicamento por codigo
+   Metodo: GET
+   URL:    http://localhost:3000/api/medicamentosBuscar/1
+   Body:   (no lleva)
+   Respuesta 200:
+   {"exito":1,"mensaje":"Medicamento encontrado.","datos":{"codigoMedicamento":1, ... }}
+
+
+7) Buscar medicamento inexistente
+   Metodo: GET
+   URL:    http://localhost:3000/api/medicamentosBuscar/999
+   Respuesta 404:
+   {"exito":0,"mensaje":"No existe el medicamento con codigo 999.","datos":null}
+
+
+8) Buscar con codigo invalido
+   Metodo: GET
+   URL:    http://localhost:3000/api/medicamentosBuscar/abc
+   Respuesta 400:
+   {"exito":0,"mensaje":"El codigo del medicamento debe ser un numero entero.","datos":null}
+
+
+9) Eliminar medicamento
+   Metodo: DELETE
+   URL:    http://localhost:3000/api/medicamentosEliminar/6
+   Body:   (no lleva)
+   Respuesta 200:
+   {"exito":1,"mensaje":"Medicamento eliminado correctamente.","datos":{"codigoMedicamento":6}}
+
+
+10) Eliminar medicamento inexistente (enviar el 9 otra vez)
+   Metodo: DELETE
+   URL:    http://localhost:3000/api/medicamentosEliminar/6
+   Respuesta 404:
+   {"exito":0,"mensaje":"No existe el medicamento con codigo 6.","datos":null}
+
+
+--------------------------------------------------------------
+ ORDEN RECOMENDADO PARA LA DEMOSTRACION
+--------------------------------------------------------------
+ 1 -> Consultar (5 registros)
+ 2 -> Agregar (se crea el codigo 6)  ->  1 Consultar (6 registros)
+ 3 -> Agregar invalido (400)
+ 4 -> Editar 6  ->  6 Buscar 6 (ver cambios)
+ 5 -> Editar 999 (404)
+ 9 -> Eliminar 6  ->  7 Buscar 6 (404)
+
+ Nota: los codigos 1 a 5 son los datos de prueba. Si ya agregaste
+ y eliminaste antes, el siguiente codigo sera 7, 8... (usa el
+ codigo que devuelva Agregar en "codigoMedicamento").
+
+--------------------------------------------------------------
+ VERIFICAR EN pgAdmin (VeterinariaDB > Query Tool)
+--------------------------------------------------------------
+ SELECT * FROM Tbl_Medicamentos ORDER BY CodigoMedicamento;
+
+ Coleccion lista para importar en Postman:
+ backend\Veterinaria_Medicamentos.postman_collection.json
